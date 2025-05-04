@@ -1,0 +1,31 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [".cspell.json", ".golangci.yml"],
+  "words": [
+    "golangci",
+    "gontext",
+    "hidori",
+    "hiroaki",
+    "interactor",
+    "println",
+    "shibuki",
+    "struct",
+    "usecase",
+    "Wrapf"
+  ],
+  "languageSettings": [
+    {
+      "languageId": "go",
+      "allowCompoundWords": false,
+      "includeRegExpList": ["CStyleComment", "string"],
+      "ignoreRegExpList": [
+        "import\\s*\\((.|[\r\n])*?\\)",
+        "import\\s*.*\".*?\"",
+        "//\\s*go:generate.*",
+        "//\\s*nolint:.*",
+        "//\\s*cSpell:.*"
+      ]
+    }
+  ]
+}
