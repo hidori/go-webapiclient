@@ -1,0 +1,41 @@
+version: "2"
+
+run:
+  tests: false
+  allow-parallel-runners: true
+
+linters:
+  default: all
+  disable:
+    - depguard
+    - err113
+    - exhaustruct
+    - gochecknoglobals
+    - ireturn
+    - wsl
+  exclusions:
+    generated: lax
+    paths:
+      - (.+)_test\.go
+      - (.+)_mock\.go
+      - (.+)_gen\.go
+      - (.+)_prop\.go
+      - cmd
+      - test
+      - example
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - (.+)_test\.go
+      - (.+)_mock\.go
+      - (.+)_gen\.go
+      - (.+)_prop\.go
+      - cmd
+      - test
+      - example
