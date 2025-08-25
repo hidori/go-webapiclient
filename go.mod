@@ -2,11 +2,9 @@ module github.com/hidori/go-webapiclient
 
 go 1.21
 
-require github.com/hidori/go-gontext v0.0.3
-
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 )
 
 require (
