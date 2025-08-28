@@ -13,6 +13,11 @@ linters:
     - gochecknoglobals
     - ireturn
     - wsl
+  settings:
+    revive:
+      rules:
+        - name: package-comments
+          disabled: true
   exclusions:
     generated: lax
     paths:
@@ -24,6 +29,7 @@ linters:
       - test
       - mock
       - example
+
 formatters:
   enable:
     - gci
