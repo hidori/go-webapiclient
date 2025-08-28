@@ -35,7 +35,7 @@ type Request struct {
 type Response struct {
 	StatusCode int
 	Headers    map[string][]string
-	Body       []byte
+	Body       io.ReadCloser
 }
 
 // EditRequestFunc is a function type for editing HTTP requests before they are sent.
@@ -62,7 +62,7 @@ func NewClient(do DoFunc, baseURL string) Client {
 func (c *client) Do(ctx context.Context, request *Request, edit EditRequestFunc) (*Response, error) {
 	httpRequest, err := c.buildHTTPRequest(ctx, request)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	if edit != nil {
@@ -77,16 +77,18 @@ func (c *client) Do(ctx context.Context, request *Request, edit EditRequestFunc)
 		return nil, errors.WithStack(err)
 	}
 
-	defer func() {
-		_ = httpResponse.Body.Close()
-	}()
-
 	err = c.validateResponse(httpResponse, request)
 	if err != nil {
-		return nil, err
+		_ = httpResponse.Body.Close()
+
+		return nil, errors.WithStack(err)
 	}
 
-	return c.readResponse(httpResponse)
+	return &Response{
+		StatusCode: httpResponse.StatusCode,
+		Headers:    httpResponse.Header.Clone(),
+		Body:       httpResponse.Body,
+	}, nil
 }
 
 func (c *client) buildHTTPRequest(ctx context.Context, request *Request) (*http.Request, error) {
@@ -136,17 +138,4 @@ func (c *client) validateResponse(httpResponse *http.Response, request *Request)
 	}
 
 	return nil
-}
-
-func (c *client) readResponse(httpResponse *http.Response) (*Response, error) {
-	responseBody, err := io.ReadAll(httpResponse.Body)
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	return &Response{
-		StatusCode: httpResponse.StatusCode,
-		Headers:    httpResponse.Header.Clone(),
-		Body:       responseBody,
-	}, nil
 }

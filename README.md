@@ -6,7 +6,7 @@ A simple and flexible HTTP client library for making API requests in Go applicat
 
 - Simple and intuitive API design
 - Context support for request cancellation and timeouts
-- Flexible request body handling with `io.Reader` interface
+- Flexible request body handling with `io.Reader` interface and response body with `io.ReadCloser`
 - Built-in response validation (status codes and content types)
 - Header normalization using `http.CanonicalHeaderKey`
 - Comprehensive error handling with stack traces
@@ -30,6 +30,7 @@ package main
 import (
     "context"
     "fmt"
+    "io"
     "log"
     "net/http"
 
@@ -53,9 +54,18 @@ func main() {
     if err != nil {
         log.Fatalf("Failed to make request: %v", err)
     }
+    defer func() {
+        _ = response.Body.Close()
+    }()
+
+    // Read the response body
+    body, err := io.ReadAll(response.Body)
+    if err != nil {
+        log.Fatalf("Failed to read response body: %v", err)
+    }
 
     fmt.Printf("Status: %d\n", response.StatusCode)
-    fmt.Printf("Body: %s\n", string(response.Body))
+    fmt.Printf("Body: %s\n", string(body))
 }
 ```
 
@@ -163,7 +173,7 @@ if err != nil {
 type Response struct {
     StatusCode int                 // HTTP status code
     Headers    map[string][]string // Response headers
-    Body       []byte              // Response body
+    Body       io.ReadCloser       // Response body
 }
 ```
 

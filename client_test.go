@@ -320,8 +320,14 @@ func TestClientImpl_Do(t *testing.T) {
 			}
 
 			require.NoError(t, err)
+			defer func() {
+				_ = got.Body.Close()
+			}()
 			assert.Equal(t, tt.want.status, got.StatusCode)
-			assert.Equal(t, tt.want.body, got.Body)
+
+			actualBody, err := io.ReadAll(got.Body)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want.body, actualBody)
 		})
 	}
 }

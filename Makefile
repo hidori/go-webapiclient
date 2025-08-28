@@ -1,10 +1,14 @@
+DOCKER_LINT_CMD = docker run --rm -v $(PWD):$(PWD) -w $(PWD) golangci/golangci-lint:latest-alpine
+
 .PHONY: lint
 lint:
-	docker run --rm -v ${PWD}:${PWD} -w ${PWD} golangci/golangci-lint:latest-alpine golangci-lint run
+	$(DOCKER_LINT_CMD) golangci-lint config verify
+	$(DOCKER_LINT_CMD) golangci-lint run
 
 .PHONY: format
 format:
-	docker run --rm -v ${PWD}:${PWD} -w ${PWD} golangci/golangci-lint:latest-alpine golangci-lint run --fix
+	$(DOCKER_LINT_CMD) golangci-lint config verify
+	$(DOCKER_LINT_CMD) golangci-lint run --fix
 
 .PHONY: test
 test:

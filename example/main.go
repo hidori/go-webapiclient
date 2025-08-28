@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -26,14 +27,23 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to make request: %v", err)
 	}
+	defer func() {
+		_ = response.Body.Close()
+	}()
+
+	// Read the response body
+	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatalf("Failed to read response body: %v", err)
+	}
 
 	// Output the first 256 bytes of the response body
-	bodyLength := len(response.Body)
+	bodyLength := len(bodyBytes)
 	if bodyLength > 256 {
 		bodyLength = 256
 	}
 
 	fmt.Printf("Response Status: %d\n", response.StatusCode)
 	fmt.Printf("First %d bytes of response body:\n", bodyLength)
-	fmt.Printf("%s\n", string(response.Body[:bodyLength]))
+	fmt.Printf("%s\n", string(bodyBytes[:bodyLength]))
 }
